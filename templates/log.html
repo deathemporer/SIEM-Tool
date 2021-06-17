@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIEM Log Analyser</title>
+    <link rel="stylesheet" href="log.css">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body{
+            background: rgb(2,0,36);
+            background: linear-gradient(54deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 6%, rgba(0,212,255,1) 65%);
+            background-repeat: no-repeat;
+            width: 100%;
+            height: 100%;
+            background-attachment: fixed;
+            font-family: 'Montserrat';
+        }
+
+        #header{
+            background-color: #E6E6FA;
+            padding-top: 10px;
+            margin: 20px;
+            border-radius: 5px;
+            padding-bottom: 20px;
+        }
+
+        #heading{
+            padding-left: 40%;
+            color: black;
+            font-weight: bold;
+        }
+
+        #topbar{
+            display: flex;
+            padding: 20px;
+        }
+
+        #search{
+            width: 70%;
+            margin-left: 100px;
+        }
+
+        #src-input{
+            width: 80%;
+            border: none;
+            border-radius: 2px;
+            height: 30px;
+        }
+
+        #src-btn{
+            border: none;
+            border-radius: 2px;
+            height: 30px;
+            background-color: blue;
+            color: white;
+            width: 10%;
+            font-size: 15px;
+        }
+
+        #sort{
+            border: none;
+            border-radius: 2px;
+            width: 40%;
+            height: 30px;
+        }
+
+        .table thead{
+            background-color: blue;
+            color: white;
+        }
+
+        #content{
+            margin: 20px;
+            border-radius: 10px;
+        }
+    </style>
+
+    <script>
+        /* function mySearch(){
+            var src = document.getElementById("src-input").value;
+            var splitstr;
+            splitstr = src.split("=");
+            $("#table tr").remove();
+            $("#body").append('<div id="content"><table class="table" id="table"><thead><tr><th>Timestamp</th><th>Event Code</th><th>Type</th><th>Message</th></tr></thead><tbody>')
+            if(src.includes("date")){
+                    $(document).ready(function(){
+                        $.getJSON("{{url_for('static', filename='log.json')}}", function(data){
+                            $.each(data, function(key, value){
+                                splitstr[1]=toString(splitstr[1])
+                                if(value.timestamp.includes(splitstr[1])){
+                                    $("#table").append(
+                                        '<tr class="success"><td>'+ value.timestamp +'</td><td>'+ value.eventCode +'</td><td>'+ value.logType +'</td><td>'+ value.message +'</td></tr>'
+                                    )
+                                }
+                            })
+                        })
+                    })
+            }
+            else if(src.includes("eventCode")){
+
+            }
+            else if(src.includes("logType")){
+                    
+            }
+            else if(src.includes("message")){
+                    
+            }
+        } */
+        $(document).ready(function () {
+                $.getJSON("{{url_for('static', filename='log.json')}}", function (data) {
+                    if (data.length > 0) {
+                        var arrItems = [];              // The array to store JSON data.
+
+                        $.each(data, function (index, value) {
+                            arrItems.push(value);       // Push the value inside the array.
+                        });
+                    }
+                    var count = 0;
+                    $.each(arrItems, function (i, v) {
+                        if(arrItems[i]['logType'].includes("error")){
+                            count = count+1;
+                        }
+                    });
+                    alert("Found "+count+" errors...");
+                });
+        });
+
+
+
+        function mySearch(){
+            $(document).ready(function () {
+                $.getJSON("{{url_for('static', filename='log.json')}}", function (data) {
+                    if (data.length > 0) {
+                        var arrItems = [];              // The array to store JSON data.
+
+                        $.each(data, function (index, value) {
+                            arrItems.push(value);       // Push the value inside the array.
+                        });
+
+                        // Use the data in the array in whatever way you want it.
+                        // I am using the array to populate a <select> dropdown list.
+
+                        var ele = document.getElementById('#table');
+                       /// $.each(arrItems, function (i, v) {
+                           // ele.innerHTML = ele.innerHTML +
+                              //  arrItems[i]['timestamp'] + arrItems[i]['eventCode'];
+                     //   });
+                        
+                        var src = document.getElementById("src-input").value;
+                        var splitstr, search;
+                        splitstr = src.split("=");
+                        $("#table tr").remove();
+                        $("#body").append('<div id=\"content\"><table class=\"table\" id=\"table\"><thead><tr><th>Timestamp</th><th>Event Code</th><th>Type</th><th>Message</th></tr></thead><tbody>');
+                        if(src.includes("date")){
+                            search=toString(splitstr[1]);
+                            alert('Searching for '+search);
+                            $.each(arrItems, function (i, v) {
+                                if(arrItems[i]['timestamp'].includes(search)){
+                                    ele.innerHTML = ele.innerHTML +
+                                    '<tr class=\"success\"><td>'+ arrItems[i]['timestamp'] +'</td><td>'+ arrItems[i]['eventCode'] +'</td><td>'+ arrItems[i]['logType']+'</td><td>'+ arrItems[i]['message'] +'</td></tr>';
+                                /// arrItems[i]['timestamp'] + arrItems[i]['eventCode'];
+                                }
+                            });
+                        }
+
+                        if(src.includes("eventCode")){
+                            search=toString(splitstr[1]);
+                            alert('Searching for '+search);
+                            $.each(arrItems, function (i, v) {
+                                if(arrItems[i]['timestamp'].includes(search)){
+                                    ele.innerHTML = ele.innerHTML +
+                                    '<tr class=\"success\"><td>'+ arrItems[i]['timestamp'] +'</td><td>'+ arrItems[i]['eventCode'] +'</td><td>'+ arrItems[i]['logType']+'</td><td>'+ arrItems[i]['message'] +'</td></tr>';
+                                /// arrItems[i]['timestamp'] + arrItems[i]['eventCode'];
+                                }
+                            });
+                        }
+
+                        if(src.includes("logType")){
+                            search=toString(splitstr[1]);
+                            alert('Searching for '+search);
+                            $.each(arrItems, function (i, v) {
+                                if(arrItems[i]['timestamp'].includes(search)){
+                                    ele.innerHTML = ele.innerHTML +
+                                    '<tr class=\"success\"><td>'+ arrItems[i]['timestamp'] +'</td><td>'+ arrItems[i]['eventCode'] +'</td><td>'+ arrItems[i]['logType']+'</td><td>'+ arrItems[i]['message'] +'</td></tr>';
+                                /// arrItems[i]['timestamp'] + arrItems[i]['eventCode'];
+                                }
+                            });
+                        }
+
+                        if(src.includes("message")){
+                            search=toString(splitstr[1]);
+                            alert('Searching for '+search);
+                            $.each(arrItems, function (i, v) {
+                                if(arrItems[i]['timestamp'].includes(search)){
+                                    ele.innerHTML = ele.innerHTML +
+                                    '<tr class=\"success\"><td>'+ arrItems[i]['timestamp'] +'</td><td>'+ arrItems[i]['eventCode'] +'</td><td>'+ arrItems[i]['logType']+'</td><td>'+ arrItems[i]['message'] +'</td></tr>';
+                                /// arrItems[i]['timestamp'] + arrItems[i]['eventCode'];
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+
+        function mySort1(){
+            $(document).ready(function () {
+                $.getJSON("{{url_for('static', filename='log.json')}}", function (data) {
+                    if (data.length > 0) {
+                        var arrItems = [];              // The array to store JSON data.
+
+                        $.each(data, function (index, value) {
+                            arrItems.push(value);       // Push the value inside the array.
+                        });
+
+                        // Use the data in the array in whatever way you want it.
+                        // I am using the array to populate a <select> dropdown list.
+                            alert("Sorting...");
+                        arrItems.sort(function(a, b) {
+                                var date1 = a['timestamp'].toUpperCase(); // ignore upper and lowercase
+                                var nameB = b['timestamp'].toUpperCase(); // ignore upper and lowercase
+                                if (nameA < nameB) {
+                                    return -1;
+                                }
+                                if (nameA > nameB) {
+                                    return 1;
+                                }
+
+                                // names must be equal
+                                return 0;
+                        });
+                        alert(arrItems);
+                        $("#table").remove();
+                        $("#content").append('<table class=\"table\" id=\"table\"><thead><tr><th>Timestamp</th><th>Event Code</th><th>Type</th><th>Message</th></tr></thead><tbody>');
+                        var ele = document.getElementById('#table');
+                        $.each(arrItems, function (i, v) {
+                            ele.innerHTML = ele.innerHTML +
+                                    '<tr class=\"success\"><td>'+ arrItems[i]['timestamp'] +'</td><td>'+ arrItems[i]['eventCode'] +'</td><td>'+ arrItems[i]['logType']+'</td><td>'+ arrItems[i]['message'] +'</td></tr>';
+                        });
+                    }
+                });
+            });
+            $("#sort2").css("border", "none !important");
+            $("#sort1").css("border", "2px solid black !important");
+        }
+
+        function mySort2(){
+            $(document).ready(function () {
+                $.getJSON("{{url_for('static', filename='log.json')}}", function (data) {
+                    if (data.length > 0) {
+                        var arrItems = [];              // The array to store JSON data.
+
+                        $.each(data, function (index, value) {
+                            arrItems.push(value);       // Push the value inside the array.
+                        });
+
+                        // Use the data in the array in whatever way you want it.
+                        // I am using the array to populate a <select> dropdown list.
+                        alert("Sorting...");
+                        arrItems.sort(function(a, b) {
+                                var date1 = a['error'].toUpperCase(); // ignore upper and lowercase
+                                var nameB = b['error'].toUpperCase(); // ignore upper and lowercase
+                                if (nameA < nameB) {
+                                    return -1;
+                                }
+                                if (nameA > nameB) {
+                                    return 1;
+                                }
+
+                                // names must be equal
+                                return 0;
+                        });
+                        alert(arrItems);
+                        $("#table").remove();
+                        $("#content").append('<table class=\"table\" id=\"table\"><thead><tr><th>Timestamp</th><th>Event Code</th><th>Type</th><th>Message</th></tr></thead><tbody>');
+                        var ele = document.getElementById('#table');
+                        $.each(arrItems, function (i, v) {
+                            ele.innerHTML = ele.innerHTML +
+                                    '<tr class=\"success\"><td>'+ arrItems[i]['timestamp'] +'</td><td>'+ arrItems[i]['eventCode'] +'</td><td>'+ arrItems[i]['logType']+'</td><td>'+ arrItems[i]['message'] +'</td></tr>';
+                        });
+                    }
+                });
+            });
+            $("#sort1").css("border", "none !important");
+            $("#sort2").css("border", "2px solid black !important");
+
+        }
+    </script>
+
+
+</head>
+<body id="body">
+    <div id="header">
+        <h1 id="heading">Search Log File</h1>
+        <div id="topbar">
+            <div id="search">
+                    <input type="search" id="src-input">
+                    <button name="Search" id="src-btn" onclick="mySearch()">Search</button>
+            </div>
+            <div id="sort">
+                    <button id="sort1" onclick="mySort1()">Sort by Date-Time</button>
+                    <button id="sort2" onclick="mySort2()">Sort by Type</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="content">
+        <table class="table" id="table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Event Code</th>
+                <th>Type</th>
+                <th>Message</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="success">
+                
+              </tr>
+            </tbody>
+          </table>
+    </div>
+    <script>
+        $(document).ready(function(){
+            $.getJSON("{{url_for('static', filename='log.json')}}", function(data){
+                $.each(data, function(key, value){
+                    $("#table").append(
+                        '<tr class="success"><td>'+ value.timestamp +'</td><td>'+ value.eventCode +'</td><td>'+ value.logType +'</td><td>'+ value.message +'</td></tr>'
+                    )
+                })
+            })
+        })
+    </script>
+</body>
+</html>

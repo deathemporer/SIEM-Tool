@@ -8,11 +8,11 @@ The application is developed using:
 
 Input to the program is a log file which is in text format. The file is then parsed to JSON format using Python. This JSON file is read by JS and rendered on to the display using HTML. Filters and sorting is implemented using JS. 
 
-The general architecture of the program is as follows:
-1.Download log file and upload to the application
-2.The log file is parsed as JSON
-3.The JSON file created has some structure in data
-4.This data is presented in the form of a table
+The general architecture of the program is as follows:<br>
+1.Download log file and upload to the application<br>
+2.The log file is parsed as JSON<br>
+3.The JSON file created has some structure in data<br>
+4.This data is presented in the form of a table<br>
 5.This shows us the errors, error messages and other important info
 
 ## How to run:
